@@ -1,0 +1,4 @@
+= Yamlization
+
+Yamlization (`y10n`) is a simple Rust-based localization (`l10n`) library.
+Strings can be defined in `.yml` files which are then merged together.

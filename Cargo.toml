@@ -2,7 +2,13 @@
 name = "y10n"
 version = "0.1.0"
 edition = "2018"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+description = "A simple YAML-based localization library"
 
 [dependencies]
+# Used for traversing directory structures
+glob = "0"
+lazy_static = "1"
+log = "*"
+serde = { version = "1", features = ["derive"] }
+serde_yaml = "0.8"
+regex = "1"
