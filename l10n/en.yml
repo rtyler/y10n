@@ -1,0 +1,4 @@
+# This is an example file with some strings in it for localization
+---
+greeting: 'hello world'
+secret: 'pancakes'
