@@ -18,6 +18,7 @@ lazy_static! {
 /**
  * Y10n is a stateful struct that can be loaded with localization files
  */
+#[derive(Clone, Debug)]
 pub struct Y10n {
     translations: HashMap<String, serde_yaml::Value>,
 }
@@ -35,7 +36,7 @@ impl Y10n {
      * For example `"l10n/**/*.yml"` will load all the yml files in the `l10n` directory using each
      * file's name (e.g. `en.yml`) to derive it's language key (`en`).
      */
-    fn from_glob(pattern: &str) -> Self {
+    pub fn from_glob(pattern: &str) -> Self {
         let mut this = Self::new();
         trace!(
             "Attempting to load translations from glob pattern: {:?}",
@@ -68,7 +69,7 @@ impl Y10n {
      * Return a Vec of all the names of languages that have been loaded
      * These are conventionally just the file stems of the yml files loaded
      */
-    fn languages(&self) -> Vec<&String> {
+    pub fn languages(&self) -> Vec<&String> {
         self.translations.keys().collect()
     }
 
@@ -80,7 +81,7 @@ impl Y10n {
      * `en` file has 10, then this function could be called with a Vec of `Language` instances of
      * `[de, en]` and the result would contain the one German string and 9 English strings.
      */
-    fn localize(&self, languages: &[Language]) -> serde_yaml::Value {
+    pub fn localize(&self, languages: &[Language]) -> serde_yaml::Value {
         use serde_yaml::{Mapping, Value};
 
         let mut values = vec![];

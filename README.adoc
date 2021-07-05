@@ -2,3 +2,38 @@
 
 Yamlization (`y10n`) is a simple Rust-based localization (`l10n`) library.
 Strings can be defined in `.yml` files which are then merged together.
+
+Typically `y10n` should be used with multiple translation files written in
+Yaml. The yaml files can be merged together to provide base translations (e.g.
+the English strings) underneath the users preferred language (such as German).
+
+== Example
+
+.en.yml
+[source,yaml]
+----
+greeting: 'hello world'
+----
+
+.de.yml
+[source,yaml]
+----
+greeting: 'hallöchen kleiner Mann'
+----
+
+
+.main.rs
+[source,rust]
+----
+use y10n::*;
+
+fn main() {
+    let y10n = Y10n::from_glob("l10n/**/*.yml");
+    // Create Language entities based on an `Accept-Languages` header
+    let langs = parse_accept_languages("en,de;q=0.5");
+    let translations = y10n.localize(&langs);
+
+    // Translations is a serde_yaml::Value which can easily be brought into
+    // handlebars or other structures for interpolation
+}
+----
