@@ -1,6 +1,8 @@
-/**
- * The y10n module contains the bulk of the functionality that this library provides
- */
+//!
+//! The y10n module contains the bulk of the functionality that this library provides
+//!
+
+#![warn(missing_docs)]
 #[macro_use]
 extern crate lazy_static;
 
@@ -8,6 +10,10 @@ use glob::glob;
 use log::*;
 use std::collections::HashMap;
 use std::fs::File;
+
+#[cfg(feature = "hb")]
+/// The handlebars module can be enabled with the `hb` feature
+pub mod handlebars;
 
 lazy_static! {
     static ref LANG_REGEX: regex::Regex =
@@ -99,6 +105,24 @@ impl Y10n {
         }
         map
     }
+
+    /**
+     * Lookup a specific token from the language files using the specified language codes
+     */
+    pub fn lookup(&self, token: &str, languages: &[Language]) -> Option<&str> {
+        for lang in languages {
+            if let Some(value) = self.translations.get(&lang.code) {
+                if let Some(values) = value.as_mapping() {
+                    if let Some(translation) =
+                        values.get(&serde_yaml::Value::String(token.to_string()))
+                    {
+                        return translation.as_str();
+                    }
+                }
+            }
+        }
+        None
+    }
 }
 
 /**
@@ -119,10 +143,11 @@ pub fn parse_accept_language(header: &str) -> Vec<Language> {
 }
 
 /**
- * Language
+ * Locale ontains useful information about a locale
  */
 #[derive(Clone, Debug)]
 pub struct Language {
+    /// A non-region based language code, i.e. "en" or "de"
     pub code: String,
     region: Option<String>,
     quality: f64,
@@ -149,6 +174,16 @@ impl Language {
             })
         } else {
             Err(Error::Generic)
+        }
+    }
+}
+
+impl From<&str> for Language {
+    fn from(code: &str) -> Self {
+        Self {
+            code: code.to_string(),
+            region: None,
+            quality: 1.0,
         }
     }
 }
@@ -188,6 +223,12 @@ fn merge_yaml(a: &mut serde_yaml::Value, b: serde_yaml::Value) {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_language_from_str() {
+        let language: Language = "en".into();
+        assert_eq!(language.code, "en");
+    }
 
     #[test]
     fn y10n_from_valid_glob() {

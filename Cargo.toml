@@ -7,8 +7,13 @@ description = "A simple YAML-based localization library"
 [dependencies]
 # Used for traversing directory structures
 glob = "0"
+handlebars = { version = "4", optional = true }
 lazy_static = "1"
 log = "*"
 serde = { version = "1", features = ["derive"] }
 serde_yaml = "0.8"
 regex = "1"
+
+[features]
+default = []
+hb = ["handlebars"]
